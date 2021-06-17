@@ -1,0 +1,164 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- <link rel="stylesheet" href="/styles.css"> -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <title>School</title>
+  </head>
+  <body class="grey lighten-3">
+
+    <!-- NAVBAR -->
+    <nav class="z-depth-0 grey lighten-4">
+      <div class="nav-wrapper container">
+        <a href="#" class="brand-logo">
+          <img src="/img/logo.svg" style="width: 180px; margin-top: 10px;">
+        </a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li class="logged-in">
+              <a href="#" class="grey-text modal-trigger" data-target="modal-account">Account</a>
+            </li>
+            <li class="logged-in">
+              <a href="#" class="grey-text" id="logout">Logout</a>
+            </li>
+            <li class="admin">
+              <a href="#" class="grey-text modal-trigger" data-target="modal-create">Create Student</a>
+            </li>
+            <li class="logged-out">
+              <a href="#" class="grey-text modal-trigger" data-target="modal-login">Login</a>
+            </li>
+            <li class="logged-out">
+              <a href="#" class="grey-text modal-trigger" data-target="modal-signup">Sign up</a>
+            </li>
+          </span>
+        </ul>
+      </div>
+    </nav>
+    <!-- SIGN UP MODAL -->
+    <div id="modal-signup" class="modal">
+      <div class="modal-content">
+        <h4>Sign up</h4><br />
+        <form id="signup-form">
+          <div class="input-field">
+            <input type="email" id="signup-email" required />
+            <label for="signup-email">Email address</label>
+          </div>
+          <div class="input-field">
+            <input type="password" id="signup-password" required />
+            <label for="signup-password">Choose password</label>
+          </div>
+          <div class="input-field">
+            <input type="text" id="signup-bio" required />
+            <label for="signup-bio">Choose bio</label>
+          </div>
+          <button class="btn yellow darken-2 z-depth-0">Sign up</button>
+          <p class="error pink-text center-align"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div id="modal-login" class="modal">
+      <div class="modal-content">
+        <h4>Login</h4><br />
+        <form id="login-form">
+          <div class="input-field">
+            <input type="email" id="login-email" required />
+            <label for="login-email">Email address</label>
+          </div>
+          <div class="input-field">
+            <input type="password" id="login-password" required />
+            <label for="login-password">Your password</label>
+          </div>
+          <button class="btn yellow darken-2 z-depth-0">Login</button>
+          <p class="error pink-text center-align"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ACCOUNT MODAL -->
+    <div id="modal-account" class="modal">
+      <div class="modal-content center-align">
+        <h4>Account details</h4><br />
+        <div class="account-details"></div>
+      </div>
+    </div>
+
+    <!-- CREATE GUIDE MODAL -->
+    <div id="modal-create" class="modal">
+      <div class="modal-content">
+        <h4>Create student</h4><br />
+        <form id="create-student">
+          <div class="input-field">
+            <input type="text" id="name" required>
+            <label for="name">Student Name</label>
+          </div>
+          <div class="input-field">
+            <!-- <input type="text" id="standard" required> -->
+            <label for="standard">Standard</label>
+            <select name="standards" id="standard">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <button class="btn yellow darken-2 z-depth-0">Create</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- STUDENT TABLE LIST -->
+    <div class="container" style="margin-top: 40px;">
+      <table class="collapsible z-depth-0" width="800" runat="server" clientidmode="Static">
+        <thead>
+          <tr>
+            <th>Name</td>
+            <th>Standard</td>
+            <th colspan="2">Action</td>
+          </tr>
+        </thead>
+        <tbody id="studentTable">
+        </tbody>
+      </table>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-functions.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBpIMzxUgYFzle9hfnxNMt7uIiuU8GLBuk",
+        authDomain: "school-d3e2b.firebaseapp.com",
+        projectId: "school-d3e2b",
+        storageBucket: "school-d3e2b.appspot.com",
+        messagingSenderId: "786588087700",
+        appId: "1:786588087700:web:ad278fa684be88c4790b81",
+        measurementId: "G-BQQ7EL42TN"
+      };
+      firebase.initializeApp(firebaseConfig)
+      const auth = firebase.auth();
+      firebase.analytics();
+
+      const db = firebase.firestore();
+      const functions = firebase.functions();
+      // db.settings({ timestampsInSnapshots = true });
+    </script>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="/scripts/auth.js"></script>
+    <script src="/scripts/index.js"></script>
+
+  </body>
+</html>
