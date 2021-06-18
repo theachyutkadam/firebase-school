@@ -14,15 +14,14 @@
 const signupForm = document.querySelector('#signup-form');
 signupForm.addEventListener('submit', (e) => {
   e.preventDefault();
-
   // get user info
   const email = signupForm['signup-email'].value;
   const password = signupForm['signup-password'].value;
-
   // sign up the user
   auth.createUserWithEmailAndPassword(email, password).then(cred => {
     return db.collection('users').doc(cred.user.uid).set({
-      bio: signupForm['signup-bio'].value
+      bio: signupForm['signup-bio'].value,
+      gender: signupForm[name='gender'].value
     })
   }).then(() => {
     // close the signup modal & reset form
@@ -71,19 +70,25 @@ auth.onAuthStateChanged(user => {
       user.admin = idTokenResult.claims.admin;
       setupUI(user);
     })
-
+    document.querySelector('#user_id').value = user.uid
     db.collection('students').onSnapshot(snapShot => {
       setupStudents(snapShot.docs);
     }, err => {
       console.log(err.message);
     });
+    db.collection('teachers').where('user_id', '==', user.uid).onSnapshot(snapShot => {
+      setupTeachers(snapShot.docs);
+    }, err => {
+      console.log(err.message);
+    });
   }else{
     setupStudents([]);
+    setupTeachers([]);
     setupUI();
   }
 })
 
-// create guides
+// create student
 const createForm = document.querySelector('#create-student');
 createForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -97,3 +102,36 @@ createForm.addEventListener('submit', (e) => {
     createForm.reset();
   })
 });
+
+// edit student
+const editForm = document.querySelector('#edit-student');
+editForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  var id = document.getElementById('studentUid').value
+  db.collection('students').doc(id).update({
+    name: editForm['name'].value,
+    standard: editForm['standard'].value
+  }).then(() => {
+    const modal = document.querySelector('#modal-edit');
+    M.Modal.getInstance(modal).close();
+    createForm.reset();
+  })
+  alert("Student was update successfully.")
+});
+
+// create teacher
+const createTeacher = document.querySelector('#create-teacher');
+createTeacher.addEventListener('submit', (e) => {
+  e.preventDefault();
+  db.collection('teachers').add({
+    name: createTeacher['name'].value,
+    email: createTeacher['email'].value,
+    birthdate: createTeacher['birthdate'].value,
+    is_active: createTeacher[name='is_active'].value,
+    user_id: createTeacher['user_id'].value
+  }).then(() => {
+    const modal = document.querySelector('#modal-create-teacher');
+    M.Modal.getInstance(modal).close();
+    createTeacher.reset();
+  })
+})

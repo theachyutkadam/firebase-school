@@ -5,14 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
     <!-- <link rel="stylesheet" href="/styles.css"> -->
     <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
     <title>School</title>
   </head>
   <body class="grey lighten-3">
-
     <!-- NAVBAR -->
     <nav class="z-depth-0 grey lighten-4">
       <div class="nav-wrapper container">
@@ -26,8 +28,11 @@
             <li class="logged-in">
               <a href="#" class="grey-text" id="logout">Logout</a>
             </li>
-            <li class="admin">
+            <li class="logged-in admin">
               <a href="#" class="grey-text modal-trigger" data-target="modal-create">Create Student</a>
+            </li>
+            <li class="logged-in admin">
+              <a href="#" class="grey-text modal-trigger" data-target="modal-create-teacher">Create Teacher</a>
             </li>
             <li class="logged-out">
               <a href="#" class="grey-text modal-trigger" data-target="modal-login">Login</a>
@@ -55,6 +60,26 @@
           <div class="input-field">
             <input type="text" id="signup-bio" required />
             <label for="signup-bio">Choose bio</label>
+          </div>
+          <div class="input-field">
+            <p>
+              <label>
+                <input id="male" name="gender" value="male" type="radio" checked />
+                <span>Male</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input id="female" name="gender" value="female" type="radio" />
+                <span>Female</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input id="transgender" name="gender" value="transgender" type="radio" />
+                <span>Transgender</span>
+              </label>
+            </p>
           </div>
           <button class="btn yellow darken-2 z-depth-0">Sign up</button>
           <p class="error pink-text center-align"></p>
@@ -89,7 +114,7 @@
       </div>
     </div>
 
-    <!-- CREATE GUIDE MODAL -->
+    <!-- CREATE STUDENT MODAL -->
     <div id="modal-create" class="modal">
       <div class="modal-content">
         <h4>Create student</h4><br />
@@ -99,9 +124,8 @@
             <label for="name">Student Name</label>
           </div>
           <div class="input-field">
-            <!-- <input type="text" id="standard" required> -->
-            <label for="standard">Standard</label>
-            <select name="standards" id="standard">
+            <select name="standards" id="standard" style="display: block;" required>
+              <option value="">Select Standard</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -119,9 +143,83 @@
       </div>
     </div>
 
+    <!-- EDIT STUDENT MODAL -->
+    <div id="modal-edit" class="modal">
+      <div class="modal-content">
+        <h4>Edit student</h4><br />
+        <form id="edit-student">
+          <div class="input-field">
+            <input type="text" id="studentUid" style="display: none" required disabled="true">
+            <input type="text" id="name" required>
+            <label for="name">Student Name</label>
+          </div>
+          <div class="input-field">
+            <select name="standards" id="standard" style="display: block;" required>
+              <option value="">Select Standard</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <button class="btn yellow darken-2 z-depth-0">Create</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- CREATE TEACHER MODAL -->
+    <div id="modal-create-teacher" class="modal">
+      <div class="modal-content">
+        <h4>Create teacher</h4><br />
+        <form id="create-teacher">
+          <div class="input-field">
+            <input type="text" id="name" required>
+            <label for="name">Name</label>
+          </div>
+
+          <div class="input-field">
+            <input type="text" id="email" required>
+            <label for="email">Email</label>
+          </div>
+
+          <div class="input-field">
+            <input type="date" id="birthdate" class="datepicker" required>
+            <label for="birthdate">Birthdate</label>
+          </div>
+
+          <div class="input-field">
+            <input type="text" id="user_id" required readonly="true">
+          </div>
+
+          <div class="input-field">
+            <p>
+              <label>
+                <input id="active" name="is_active" value="true" type="radio" checked />
+                <span>Active</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input id="female" name="is_active" value="false" type="radio" />
+                <span>Not Active</span>
+              </label>
+            </p>
+          </div>
+          <button class="btn yellow darken-2 z-depth-0">Create</button>
+        </form>
+      </div>
+    </div>
+
     <!-- STUDENT TABLE LIST -->
     <div class="container" style="margin-top: 40px;">
-      <table class="collapsible z-depth-0" width="800" runat="server" clientidmode="Static">
+      <h4 class="logged-in">Student list</h4>
+      <table class="collapsible z-depth-0 students" width="800" runat="server" clientidmode="Static">
         <thead>
           <tr>
             <th>Name</td>
@@ -130,6 +228,25 @@
           </tr>
         </thead>
         <tbody id="studentTable">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- TEACHER TABLE LIST -->
+    <div class="container" style="margin-top: 40px;">
+      <h4 class="logged-in">Teacher list</h4>
+      <table class="collapsible z-depth-0 teachers" width="800" runat="server" clientidmode="Static">
+        <thead>
+          <tr>
+            <th>Name</td>
+            <th>Email</td>
+            <th>Birthdate</td>
+            <th>Active</td>
+            <th>UserID</td>
+            <th colspan="2">Action</td>
+          </tr>
+        </thead>
+        <tbody id="teacherTable">
         </tbody>
       </table>
     </div>
@@ -153,6 +270,10 @@
       const db = firebase.firestore();
       const functions = firebase.functions();
       // db.settings({ timestampsInSnapshots = true });
+
+      // $(document).ready(function(){
+      //   $('.datepicker').datepicker();
+      // });
     </script>
 
     <!-- Compiled and minified JavaScript -->
